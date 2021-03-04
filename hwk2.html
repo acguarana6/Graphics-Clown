@@ -1,4 +1,6 @@
-<!-- This program
+<!-- This program builds a clown figure using the Three.js library and 3D
+	objects. The flexibility of the clown is exhibited in the GUI, in which 
+	users can toggle the sliders to change the dimensions of the clown.
 
 	CS 307
 	HW 2: Clown
@@ -38,38 +40,81 @@
 	<h1>HW 2: Clown Three.js Application</h1>
 
 	<script>
-		// defining colors and materials for the clown
+		// defining colors for the clown
 		var bodyColor = "dodgerblue";
 		var headColor = "aquamarine";
 		var eyesColor = "indigo"
 		var legsColor = "magenta"
 		var footColor = "green"
 		
+		// defining materials for the clown
 		var bodyMaterial = new THREE.MeshBasicMaterial({ color: bodyColor });
 		var headMaterial = new THREE.MeshBasicMaterial({ color: headColor });
 		var eyesMaterial = new THREE.MeshBasicMaterial({ color: eyesColor });
 		var legsMaterial = new THREE.MeshBasicMaterial({ color: legsColor });
 		var footMaterial = new THREE.MeshBasicMaterial({ color: footColor });
 
-		function createNose(params) {
+		/** 
+		 * Creates an eye geometry and returns an eye mesh. 
+		 * Input: dictionary of clown parameters.
+		 */
+		 function createEye(params) {
+			var eyeGeom = new THREE.SphereGeometry(params.eyeRadius);
+			var eyeMesh = new THREE.Mesh(eyeGeom, eyesMaterial);
+
+			return eyeMesh;
+		}
+
+		/** 
+		 * Adds the eye mesh to the eye frame object, then adds the eye object to the head. 
+		 * Input: head object, dictionary of clown parameters, and side (left = 1, right = -1).
+		 */
+		 function addEye(head, params, side) {
+			var eyeFrame = new THREE.Object3D();
+			var eyeMesh = createEye(params);
+			var radius = params.headRadius;
+
+			eyeMesh.position.z = radius;
+			eyeFrame.rotation.x = params.eyeAngleX
+			eyeFrame.rotation.y = side * params.eyeAngleY;
+
+			eyeFrame.add(eyeMesh);
+			head.add(eyeFrame);
+		}
+
+		/** 
+		 * Creates a nose geometry and returns a nose mesh. 
+		 * Input: dictionary of clown parameters.
+		 */
+		 function createNose(params) {
 			var noseGeom = new THREE.SphereGeometry(params.noseRadius);
 			var noseMesh = new THREE.Mesh(noseGeom, eyesMaterial);
 
 			return noseMesh;
 		}
 
-		function addNose(head, params) {
-			var noseframe = new THREE.Object3D();
-			var nose = createNose(params);
-			nose.position.z = params.headRadius;
-			noseframe.add(nose);
-			noseframe.rotation.x = params.noseRotation;
-			head.add(noseframe);
+		/** 
+		 * Adds the nose mesh to the nose frame object, then adds the nose object to the head. 
+		 * Input: head object, dictionary of clown parameters.
+		 */
+		 function addNose(head, params) {
+			var noseFrame = new THREE.Object3D();
+			var noseMesh = createNose(params);
+			
+			noseMesh.position.z = params.headRadius;
+			noseFrame.add(noseMesh);
+			noseFrame.rotation.x = params.noseRotation;
+			
+			head.add(noseFrame);
 
 			return head;
 		}
 
-		function createEar(params) {
+		/** 
+		 * Creates an ear geometry and returns an ear mesh. 
+		 * Input: dictionary of clown parameters.
+		 */
+		 function createEar(params) {
 			var earGeom = new THREE.SphereGeometry(params.earRadius);
 			var earMesh = new THREE.Mesh(earGeom, eyesMaterial);
 			earMesh.scale.z = params.earScale;
@@ -77,155 +122,191 @@
 			return earMesh;
 		}
 
-		function addEar(head, params, side) {
-			var earframe = new THREE.Object3D();
-			var ear = createEar(params);
+		/** 
+		 * Adds the ear mesh to the ear frame object, then adds the ear object to the head. 
+		 * Input: head object, dictionary of clown parameters, and side (left = 1, right = -1).
+		 */
+		 function addEar(head, params, side) {
+			var earFrame = new THREE.Object3D();
+			var earMesh = createEar(params);
 			var radius = params.headRadius;
 			var angle = params.earAngle;
-			ear.position.x = side * radius;
-			earframe.rotation.z = side * angle;
-			earframe.add(ear);
-			head.add(earframe);
 
-			return head;
+			earMesh.position.x = side * radius;
+			earFrame.rotation.z = side * angle;
+
+			earFrame.add(earMesh);
+			head.add(earFrame);
 		}
-
-		function createEye(params) {
-			var eyeGeom = new THREE.SphereGeometry(params.eyeRadius);
-			var eyeMesh = new THREE.Mesh(eyeGeom, eyesMaterial);
-
-			return eyeMesh;
-		}
-
-		function addEye(head, params, side) {
-			var eyeframe = new THREE.Object3D();
-			var eye = createEye(params);
-			var radius = params.headRadius;
-			eye.position.z = radius;
-			eyeframe.rotation.x = params.eyeAngleX
-			eyeframe.rotation.y = side * params.eyeAngleY;
-			eyeframe.add(eye);
-			head.add(eyeframe);
-
-			return head;
-		}
-
-		function createMouth(params) {
+		
+		/** 
+		 * Creates a mouth geometry and returns a mouth mesh. 
+		 * Input: dictionary of clown parameters.
+		 */
+		 function createMouth(params) {
 			var mouthGeom = new THREE.TorusGeometry(params.mouthRadius, 0.2, 26, 100, -3.3);
 			var mouthMesh = new THREE.Mesh(mouthGeom, legsMaterial);
 
 			return mouthMesh;
 		}
 
-		function addMouth(head, params) {
-			var mouthframe = new THREE.Object3D();
-			var mouth = createMouth(params);
-			mouth.position.z = params.headRadius + 0.2;
-			mouthframe.add(mouth);
-			mouthframe.rotation.x = params.mouthRotation;
-			head.add(mouthframe);
+		/** 
+		 * Adds the mouth mesh to the mouth frame object, then adds the mouth object to the head. 
+		 * Input: head object, dictionary of clown parameters.
+		 */
+		 function addMouth(head, params) {
+			var mouthFrame = new THREE.Object3D();
+			var mouthMesh = createMouth(params);
+			
+			mouthMesh.position.z = params.headRadius + 0.2;
+			mouthFrame.rotation.x = params.mouthRotation;
 
-			return head;
+			mouthFrame.add(mouthMesh);
+			head.add(mouthFrame);
 		}
 
+		/** 
+		 * Adds the head mesh to the head frame object, then adds the head object components to the head. 
+		 * Input: dictionary of clown parameters.
+		 */
 		function createHead(params) {
-			var head = new THREE.Object3D();
+			var headFrame = new THREE.Object3D();
 			var headGeom = new THREE.SphereGeometry(params.headRadius, 32, 32);
 			var headMesh = new THREE.Mesh(headGeom, headMaterial);
-			head.add(headMesh);
 			
-			addNose(head, params);
-			addMouth(head, params);
-			addEar(head, params, 1);
-			addEar(head, params, -1);
-			addEye(head, params, 1);
-			addEye(head, params, -1);
+			headFrame.add(headMesh);
 			
-			return head;
+			addNose(headFrame, params);
+			addMouth(headFrame, params);
+			addEar(headFrame, params, 1);
+			addEar(headFrame, params, -1);
+			addEye(headFrame, params, 1);
+			addEye(headFrame, params, -1);
+			
+			return headFrame;
 		}
 
+		/** 
+		 * Creates an arm geometry and returns an arm mesh. 
+		 * Input: dictionary of clown parameters.
+		 */
 		function createArm(params) {
-			var arm = new THREE.Object3D();
+			var armFrame = new THREE.Object3D();
 			var armGeom = new THREE.CylinderGeometry(params.armRadiusTop, params.armRadiusBottom, params.armLength);
 			var armMesh = new THREE.Mesh(armGeom, bodyMaterial);
-			armMesh.position.y = -params.armLength / 2;
-			arm.add(armMesh);
 			
-			return arm;
+			armMesh.position.y = -params.armLength / 2;
+			
+			armFrame.add(armMesh);
+			
+			return armFrame;
 		}
 
-		function addArm(clown, params, side) {
-			var arm = createArm(params);
-			var bodyRadius = params.bodyRadius;
-			var scale = params.bodyScaleY;
-			arm.position.set(side * params.shoulderWidth, params.shoulderHeight, 0);
-			arm.rotation.z = side * Math.PI / 2;
-			clown.add(arm);
+		/** 
+		 * Adds the arm object to the body. 
+		 * Input: body object, dictionary of clown parameters, and side (left = 1, right = -1).
+		 */
+		function addArm(body, params, side) {
+			var armFrame = createArm(params);
+
+			armFrame.position.set(side * params.shoulderWidth, params.shoulderHeight, 0);
+			armFrame.rotation.z = side * Math.PI / 2;
+			
+			body.add(armFrame);
 		}
 
+		/** 
+		 * Adds the limb object to the body. 
+		 * Input: leg object, dictionary of clown parameters, and side (left = 1, right = -1).
+		 */
+		function addLeg(body, params, side) {
+			var legFrame = createLimb(params.legRadiusTop, params.legRadiusBottom, params.legLength, params);
+			legFrame.position.set(side * params.hipWidth, params.hipHeight, 0);
+			
+			body.add(legFrame);
+		}
+
+		/** 
+		 * Adds the limb mesh to the limb frame object and returns the limb object.
+		 * Input: radii of the top and bottom of the limb, length of the limb, and dictionary of clown parameters.
+		 */
 		function createLimb(radiusTop, radiusBottom, length, params) {
-			var limb = new THREE.Object3D();
+			var limbFrame = new THREE.Object3D();
 			var limbGeom = new THREE.CylinderGeometry(radiusTop, radiusBottom, length);
 			var limbMesh = new THREE.Mesh(limbGeom, legsMaterial);
+			
 			limbMesh.position.y = -length / 2;
-			limb.add(limbMesh);
+			limbFrame.add(limbMesh);
 
-			return limb;
+			return limbFrame;
 		}
 
-		function addLeg(clown, params, side) {
-			var leg = createLimb(params.legRadiusTop, params.legRadiusBottom, params.legLength, params);
-			leg.position.set(side * params.hipWidth, params.hipHeight, 0);
-			clown.add(leg);
-		}
-
+		/** 
+		 * Creates a foot geometry and returns a foot mesh. 
+		 * Input: dictionary of clown parameters.
+		 */
 		function createFoot(params) {
-			var foot = new THREE.Object3D();
 			var footGeom = new THREE.SphereGeometry(params.footRadius, 32, 32, 0, 6, 0, 1.5);
 			var footMesh = new THREE.Mesh(footGeom, footMaterial);
-			foot.add(footMesh);
 
 			return footMesh;
 		}
 
+		/** 
+		 * 
+		 */
 		function addFoot(leg, params, side) {
-			var foot = createFoot(params);
+			var footMesh = createFoot(params);
 			var hipWidth = side * params.hipWidth;
-			var bodyLegLength = params.legLength*2 - 2.5;
-			foot.position.set(hipWidth, -bodyLegLength, 0);
-			leg.add(foot);
+			var legLength = params.legLength*2 - 2.5;
+			
+			footMesh.position.set(hipWidth, -legLength, 0);
+			
+			leg.add(footMesh);
 		}
 
+		/** 
+		 * Adds the body mesh to the body frame object, then adds the body object components to the body. 
+		 * Input: dictionary of clown parameters.
+		 */
 		function createBody(params) {
-			var body = new THREE.Object3D();
+			var bodyFrame = new THREE.Object3D();
 			var bodyGeom = new THREE.SphereGeometry(params.bodyRadius, 32, 32);
 			var bodyMesh = new THREE.Mesh(bodyGeom, bodyMaterial);
+			
+			bodyFrame.add(bodyMesh);
+
+			addArm(bodyFrame, params, 1);
+			addArm(bodyFrame, params, -1);
+			addLeg(bodyFrame, params, 1);
+			addLeg(bodyFrame, params, -1);
+			addFoot(bodyFrame, params, 1);
+			addFoot(bodyFrame, params, -1);
+
 			bodyMesh.scale.y = params.bodyScaleY;
-			body.add(bodyMesh);
 
-			addArm(body, params, 1);
-			addArm(body, params, -1);
-			addLeg(body, params, 1);
-			addLeg(body, params, -1);
-			addFoot(body, params, 1);
-			addFoot(body, params, -1);
-
-			return body;
+			return bodyFrame;
 		}
 
+		/** 
+		 * Adds the body and head meshes to the clown frame object, then returns the clown object. 
+		 * Input: dictionary of clown parameters.
+		 */
 		function createClown(params) {
-			var clown = new THREE.Object3D();
-			var body = createBody(params);
-			var head = createHead(params);
+			var clownFrame = new THREE.Object3D();
+			var bodyMesh = createBody(params);
+			var headMesh = createHead(params);
+			
 			var bodyHeight = params.bodyScaleY;
 			var bodyRadius = params.bodyRadius;
 			var headRadius = params.headRadius;
-			head.position.y = bodyHeight * bodyRadius + headRadius - 0.5;
 			
-			clown.add(body);
-			clown.add(head);
+			headMesh.position.y = bodyHeight * bodyRadius + headRadius - 0.5;
 			
-			return clown;
+			clownFrame.add(bodyMesh);
+			clownFrame.add(headMesh);
+			
+			return clownFrame;
 		}
 
 		// ====================================================================
@@ -277,6 +358,7 @@
 			hipHeight: -6,
 			hipWidth: 2.2
 		}
+		
 		var clown = createClown(clownParams);
 		scene.add(clown);
 		clown.position.set(0, 15, 0);
