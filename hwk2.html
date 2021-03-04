@@ -187,27 +187,11 @@
 		}
 
 		/** 
-		 * Creates an arm geometry and returns an arm mesh. 
-		 * Input: dictionary of clown parameters.
-		 */
-		function createArm(params) {
-			var armFrame = new THREE.Object3D();
-			var armGeom = new THREE.CylinderGeometry(params.armRadiusTop, params.armRadiusBottom, params.armLength);
-			var armMesh = new THREE.Mesh(armGeom, bodyMaterial);
-			
-			armMesh.position.y = -params.armLength / 2;
-			
-			armFrame.add(armMesh);
-			
-			return armFrame;
-		}
-
-		/** 
-		 * Adds the arm object to the body. 
+		 * Builds a arm frame object by creating a limb and adds it to the body. 
 		 * Input: body object, dictionary of clown parameters, and side (left = 1, right = -1).
 		 */
 		function addArm(body, params, side) {
-			var armFrame = createArm(params);
+			var armFrame = createLimb(params.armRadiusTop, params.armRadiusBottom, params.armLength, bodyMaterial, params);
 
 			armFrame.position.set(side * params.shoulderWidth, params.shoulderHeight, 0);
 			armFrame.rotation.z = side * Math.PI / 2;
@@ -216,11 +200,11 @@
 		}
 
 		/** 
-		 * Adds the limb object to the body. 
+		 * Builds a leg frame object by creating a limb and adds it to the body. 
 		 * Input: leg object, dictionary of clown parameters, and side (left = 1, right = -1).
 		 */
 		function addLeg(body, params, side) {
-			var legFrame = createLimb(params.legRadiusTop, params.legRadiusBottom, params.legLength, params);
+			var legFrame = createLimb(params.legRadiusTop, params.legRadiusBottom, params.legLength, legsMaterial, params);
 			legFrame.position.set(side * params.hipWidth, params.hipHeight, 0);
 			
 			body.add(legFrame);
@@ -228,12 +212,12 @@
 
 		/** 
 		 * Adds the limb mesh to the limb frame object and returns the limb object.
-		 * Input: radii of the top and bottom of the limb, length of the limb, and dictionary of clown parameters.
+		 * Input: limb dimensions (radii and length), limb material, and dictionary of clown parameters.
 		 */
-		function createLimb(radiusTop, radiusBottom, length, params) {
+		function createLimb(radiusTop, radiusBottom, length, limbMaterial, params) {
 			var limbFrame = new THREE.Object3D();
 			var limbGeom = new THREE.CylinderGeometry(radiusTop, radiusBottom, length);
-			var limbMesh = new THREE.Mesh(limbGeom, legsMaterial);
+			var limbMesh = new THREE.Mesh(limbGeom, limbMaterial);
 			
 			limbMesh.position.y = -length / 2;
 			limbFrame.add(limbMesh);
