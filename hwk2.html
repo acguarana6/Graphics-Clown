@@ -65,7 +65,6 @@
 		var footMaterial = new THREE.MeshBasicMaterial({ color: footColor, side: THREE.DoubleSide });
 		var rugMaterial = new THREE.MeshBasicMaterial({ color: rugColor, side: THREE.DoubleSide });
 
-
 		/**
 		 * Returns a hat frame object created from hat rim and hat top geometries/meshes.
 		 * Input: dictionary of clown parameters.
@@ -77,8 +76,8 @@
 			var hatBrimMesh = new THREE.Mesh(hatBrimGeom, bodyMaterial);
 			var hatCrownMesh = new THREE.Mesh(hatCrownGeom, bodyMaterial);
 
-			hatCrownMesh.position.y = params.headRadius + params.hatHeight/2 - 0.2;
-			hatBrimMesh.position.y = params.headRadius - 0.2;
+			hatCrownMesh.position.y = params.headRadius + params.hatHeight/2;
+			hatBrimMesh.position.y = params.headRadius;
 			hatBrimMesh.rotation.x = Math.PI/2;
 
 			hatFrame.add(hatBrimMesh);
@@ -93,9 +92,10 @@
 		 */
 		 function addHat(head, params) {
 			var hatFrame = createHat(params);
-
+			
+			hatFrame.position.y = params.hatOffset;
 			hatFrame.rotation.x = params.hatRotationX;
-			hatFrame.rotation.y = params.hatRotationY;
+			hatFrame.rotation.z = params.hatRotationZ;
 
 			head.add(hatFrame);
 
@@ -383,8 +383,9 @@
 			hatTopRadius: 3,
 			hatBottomRadius: 2,
 			hatBrimRadius: 4,
+			hatOffset: -0.4,
 			hatRotationX: -0.3,
-			hatRotationY: 1.4,
+			hatRotationZ: -Math.PI/6,
 
 			eyeRadius: 0.3,
 			eyeRotationX: -0.2,
@@ -451,7 +452,7 @@
 		hatFolder.add(clownParams, 'hatBottomRadius', 1, 4).onChange(redrawClown);
 		hatFolder.add(clownParams, 'hatBrimRadius', 3, 5).onChange(redrawClown);
 		hatFolder.add(clownParams, 'hatRotationX', -0.5, 1).onChange(redrawClown);
-		hatFolder.add(clownParams, 'hatRotationY', 0, 2).onChange(redrawClown);
+		hatFolder.add(clownParams, 'hatRotationZ', -Math.PI/4, Math.PI/4).onChange(redrawClown);
 
 		var eyesFolder = gui.addFolder('eyes');
 		eyesFolder.add(clownParams, 'eyeRadius', -0.5, 1).onChange(redrawClown);
@@ -463,9 +464,9 @@
 		noseFolder.add(clownParams, 'noseRotation', -0.3, 0.5).onChange(redrawClown);
 
 		var mouthFolder = gui.addFolder('mouth');
-		mouthFolder.add(clownParams, 'mouthRadius', 0.2, 1).onChange(redrawClown);
-		mouthFolder.add(clownParams, 'mouthWidth', 0.1, 0.5).onChange(redrawClown);
-		mouthFolder.add(clownParams, 'mouthArcLength', 2, 3.5).onChange(redrawClown);
+		mouthFolder.add(clownParams, 'mouthRadius', 0.4, 0.8).onChange(redrawClown);
+		mouthFolder.add(clownParams, 'mouthWidth', 0.1, 0.25).onChange(redrawClown);
+		mouthFolder.add(clownParams, 'mouthArcLength', 2, 3.3).onChange(redrawClown);
 		mouthFolder.add(clownParams, 'mouthRotation', 0, 0.5).onChange(redrawClown);
 
 		var earsFolder = gui.addFolder('ears');
@@ -484,7 +485,7 @@
 		shouldersFolder.add(clownParams, 'shoulderHeight', 3, 7).onChange(redrawClown);
 
 		var hipsFolder = gui.addFolder('hips');
-		hipsFolder.add(clownParams, 'hipWidth', 4, 7).onChange(redrawClown);
+		hipsFolder.add(clownParams, 'hipWidth', 1, 3).onChange(redrawClown);
 		hipsFolder.add(clownParams, 'hipHeight', -8, 4).onChange(redrawClown);
 
 		var legsFolder = gui.addFolder('legs');
