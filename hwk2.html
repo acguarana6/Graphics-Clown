@@ -162,11 +162,49 @@
 			var arm = createArm(params);
 			var radius = params.bodyRadius;
 			var scale = params.bodyScaleY;
-			var sx = params.shoulderWidth || radius * 0.5;
-			var sy = params.shoulderHeight || scale * radius * 0.7;
+			var sx = params.shoulderWidth *1.5;
+			var sy = params.shoulderHeight;
 			arm.position.set(side * sx, sy, 0);
-			arm.rotation.z = side * Math.PI / 2;
+			var zRot = side * Math.PI/5;
+			arm.rotation.set(0,0,zRot)
 			clown.add(arm);
+		}
+
+		function createHand(params) {
+			var hand = new THREE.Object3D();
+			var radius = params.handRadius;
+			var handGeometry = new THREE.SphereGeometry(radius, 32, 32, 0,7,0);
+			var handMesh = new THREE.Mesh(handGeometry, footMaterial); //hands and feet are the same color
+			hand.add(handMesh);
+			return handMesh;
+		}
+
+		function addHand(clown, params, side) {
+			var hand = createHand(params);
+			var armWidth = side * (params.shoulderWidth/4 + (params.armLength* Math.sin(90- Math.PI/5)));
+			var armHeight = -1*(params.shoulderWidth + (params.armLength* Math.cos(90- Math.PI/5)));
+			hand.position.set(armWidth, armHeight, 0);
+			clown.add(hand);
+			console.log('adding hand')
+		}
+
+		function createShoulder(params) {
+			var shoulder = new THREE.Object3D();
+			var radius = params.handRadius;
+			var shoulderGeometry = new THREE.SphereGeometry(radius, 32, 32, 0,7,0);
+			var shoulderMesh = new THREE.Mesh(shoulderGeometry, legsMaterial); //shoulders and logs are the same color
+			shoulder.add(shoulderMesh);
+			return shoulderMesh;
+		}
+
+		function addShoulder(clown, params, side) {
+			var shoulder = createShoulder(params);
+			var armWidth = side * (params.shoulderWidth + (params.armLength* Math.cos(90- Math.PI/5)));
+			//accidentally did shoulders instead of hands
+			var armHeight = params.shoulderHeight;
+			shoulder.position.set(armWidth, armHeight, 0);
+			clown.add(shoulder);
+			console.log('adding shoulder')
 		}
 
 		function createLimb(radiusTop, radiusBottom, length, params) {
@@ -196,7 +234,7 @@
 		function createFoot(params) {
 			var foot = new THREE.Object3D();
 			var radius = params.footRadius;
-			var footGeometry = new THREE.SphereGeometry(radius, 32, 32, 0,6,0, 1.5);
+			var footGeometry = new THREE.SphereGeometry(radius, 32, 32, 0,7,0, 1.5);
 			var footMesh = new THREE.Mesh(footGeometry, footMaterial);
 			foot.add(footMesh);
 			return footMesh;
@@ -208,8 +246,6 @@
 			var bodyLegLength = params.legLength*2 - 2.5;
 			foot.position.set(hipWidth, -bodyLegLength, 0);
 			leg.add(foot);
-			console.log('feet')
-
 		}
 
 
@@ -227,6 +263,10 @@
 			addLeg(body, params, -1);
 			addFoot(body, params, 1);
 			addFoot(body, params, -1);
+			addHand(body, params, 1);
+			addHand(body, params, -1);
+			addShoulder(body, params, 1);
+			addShoulder(body, params, -1);
 			return body;
 		}
 
@@ -276,17 +316,22 @@
 			mouthRadius: 0.6,
 			mouthRotation: 0.3,
 
-			armLength: 7,
+			shoulderWidth: 5 * 0.5,
+			shoulderHeight: 1.5 * 5 * 0.7,
+
+			armLength: 10,
 			armRadiusTop: 0.7,
 			armRadiusBottom: 0.7,
 			armRotation: 0.7,
+
+			handRadius: 2,
 
 			legLength: 9,
 			legRadiusTop: 0.7,
 			legRadiusBottom: 0.7,
 			legRotation: 0.7,
 
-			footRadius: 1,
+			footRadius: 2,
 
 			hipHeight: -6,
 			hipWidth: 2.2
