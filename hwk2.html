@@ -239,7 +239,11 @@
 			var armFrame = createLimb(params.armRadiusTop, params.armRadiusBottom, params.armLength, bodyMaterial, params);
 
 			armFrame.position.set(side * params.shoulderWidth, params.shoulderHeight, 0);
-			armFrame.rotation.z = side * Math.PI / 2;
+			var zRot = side * params.armRotation;
+			armFrame.rotation.set(0,0,zRot)
+
+			addHand(armFrame, params, side);
+			addShoulder(armFrame, params, side);
 
 			body.add(armFrame);
 		}
@@ -277,7 +281,7 @@
 		 * Input: dictionary of clown parameters.
 		 */
 		function createFoot(params) {
-			var footGeom = new THREE.SphereGeometry(params.footRadius, 32, 32, 0, 6, 0, 1.5);
+			var footGeom = new THREE.SphereGeometry(params.footRadius, 32, 32, 0, 7, 0, 1.5);
 			var footMesh = new THREE.Mesh(footGeom, footMaterial);
 
 			return footMesh;
@@ -296,6 +300,58 @@
 			footFrame.position.y = -params.legLength;
 
 			leg.add(footFrame);
+		}
+
+		/**
+		 * Creates a hand geometry and returns a hand mesh.
+		 * Input: dictionary of clown parameters.
+		 */
+		function createHand(params) {
+			var handGeom = new THREE.SphereGeometry(params.handRadius, 32, 32, 0, 7, 0);
+			var handMesh = new THREE.Mesh(handGeom, footMaterial);
+
+			return handMesh;
+		}
+
+		/**
+		 * Adds the hand mesh to the hand frame object, then adds the hand object to the arm.
+		 * Input: arm object, dictionary of clown parameters.
+		 */
+		function addHand(arm, params) {
+			var handFrame = new THREE.Object3D();
+			var handMesh = createHand(params);
+
+			handFrame.add(handMesh);
+
+			handFrame.position.y = -params.armLength;
+
+			arm.add(handFrame);
+		}
+
+		/**
+		 * Creates a shoulder geometry and returns a shoulder mesh.
+		 * Input: dictionary of clown parameters.
+		 */
+		function createShoulder(params) {
+			var shoulderGeom = new THREE.SphereGeometry(params.handRadius, 32, 32, 0, 7, 0);
+			var shoulderMesh = new THREE.Mesh(shoulderGeom, legsMaterial);
+
+			return shoulderMesh;
+		}
+
+		/**
+		 * Adds the shoulder mesh to the shoulder frame object, then adds the shoulder object to the arm.
+		 * Input: arm object, dictionary of clown parameters.
+		 */
+		function addShoulder(arm, params) {
+			var shoulderFrame = new THREE.Object3D();
+			var shoulderMesh = createShoulder(params);
+
+			shoulderFrame.add(shoulderMesh);
+
+			shoulderFrame.position.y = 0;
+
+			arm.add(shoulderFrame);
 		}
 
 		/**
@@ -388,13 +444,15 @@
 			earScale: 0.5,
 			earRotation: 0.1,
 
-			armLength: 7,
+			armLength: 9,
 			armRadiusTop: 0.7,
 			armRadiusBottom: 0.7,
-			armRotation: 0.7,
+			armRotation: Math.PI/5,
 
-			shoulderWidth: 2.5,
-			shoulderHeight: 5.25,
+			handRadius: 1.5,
+
+			shoulderWidth: 3.7,
+			shoulderHeight: 5.9,
 
 			hipWidth: 2.2,
 			hipHeight: -6,
@@ -402,7 +460,7 @@
 			legLength: 9,
 			legRadiusTop: 0.7,
 			legRadiusBottom: 0.7,
-			footRadius: 1.5
+			footRadius: 2
 		}
 
 		addClown(clownParams);
@@ -470,7 +528,7 @@
 		legsFolder.add(clownParams, 'legLength', 3, 12).onChange(redrawClown);
 		legsFolder.add(clownParams, 'legRadiusTop', 0.3, 2).onChange(redrawClown);
 		legsFolder.add(clownParams, 'legRadiusBottom', 0.3, 2).onChange(redrawClown);
-		legsFolder.add(clownParams, 'footRadius', 0.3, 2).onChange(redrawClown);
+		legsFolder.add(clownParams, 'footRadius', 1.5, 2.5).onChange(redrawClown);
 
 		// ====================================================================
 
