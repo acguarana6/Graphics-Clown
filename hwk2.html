@@ -8,6 +8,17 @@
 	Due: March 5, 2021
 -->
 
+<!-- TODOs:
+1. Add shoulders
+2. Add hands
+3. Add arm rotation
+4. Fix clown position y
+5. Update GUI with 1-3
+6. Make arms move with respect to body (remove shoulderHeight)
+7. Make legs move with respect to body (remove hipHeight)
+8. Make double sided material
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -335,7 +346,7 @@
 		function addClown(params) {
 			clown = createClown(params);
 			scene.add(clown);
-			clown.position.set(0, 15, 0);
+			clown.position.y = params.legLength * 2;
 		}
 
 		// ====================================================================
