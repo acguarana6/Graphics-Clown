@@ -16,7 +16,6 @@
 5. Update GUI with 1-3
 6. Make arms move with respect to body (remove shoulderHeight)
 7. Make legs move with respect to body (remove hipHeight)
-8. Make double sided material
 -->
 
 <!DOCTYPE html>
@@ -57,13 +56,15 @@
 		var eyesColor = "indigo"
 		var legsColor = "magenta"
 		var footColor = "springgreen"
+		var rugColor = "lightpink"
 		
 		// defining materials for the clown
-		var bodyMaterial = new THREE.MeshBasicMaterial({ color: bodyColor });
-		var headMaterial = new THREE.MeshBasicMaterial({ color: headColor });
-		var eyesMaterial = new THREE.MeshBasicMaterial({ color: eyesColor });
-		var legsMaterial = new THREE.MeshBasicMaterial({ color: legsColor });
-		var footMaterial = new THREE.MeshBasicMaterial({ color: footColor });
+		var bodyMaterial = new THREE.MeshBasicMaterial({ color: bodyColor, side: THREE.DoubleSide });
+		var headMaterial = new THREE.MeshBasicMaterial({ color: headColor, side: THREE.DoubleSide });
+		var eyesMaterial = new THREE.MeshBasicMaterial({ color: eyesColor, side: THREE.DoubleSide });
+		var legsMaterial = new THREE.MeshBasicMaterial({ color: legsColor, side: THREE.DoubleSide });
+		var footMaterial = new THREE.MeshBasicMaterial({ color: footColor, side: THREE.DoubleSide });
+		var rugMaterial = new THREE.MeshBasicMaterial({ color: rugColor, side: THREE.DoubleSide });
 
 		
 		/** 
@@ -305,7 +306,7 @@
 		 */
 		function createBody(params) {
 			var bodyFrame = new THREE.Object3D();
-			var bodyGeom = new THREE.SphereGeometry(params.bodyRadiusX, 32, 32);
+			var bodyGeom = new THREE.SphereGeometry(params.bodyRadius, 32, 32);
 			var bodyMesh = new THREE.Mesh(bodyGeom, bodyMaterial);
 			
 			bodyFrame.add(bodyMesh);
@@ -315,7 +316,7 @@
 			addLeg(bodyFrame, params, 1);
 			addLeg(bodyFrame, params, -1);
 
-			bodyMesh.scale.y = params.bodyRadiusY;
+			bodyMesh.scale.y = params.bodyScaleY;
 
 			return bodyFrame;
 		}
@@ -329,11 +330,11 @@
 			var bodyMesh = createBody(params);
 			var headMesh = createHead(params);
 			
-			var bodyHeight = params.bodyRadiusY;
-			var bodyRadiusX = params.bodyRadiusX;
+			var bodyHeight = params.bodyScaleY;
+			var bodyRadius = params.bodyRadius;
 			var headRadius = params.headRadius;
 			
-			headMesh.position.y = bodyHeight * bodyRadiusX + headRadius - 0.5;
+			headMesh.position.y = bodyHeight * bodyRadius + headRadius - 0.5;
 			
 			clownFrame.add(bodyMesh);
 			clownFrame.add(headMesh);
@@ -343,15 +344,28 @@
 
 		var clown;  // global variable for the clown object (will be modified upon toggling the slider)
 
-		function addClown(params) {
+		/** 
+		 * Adds the clown to the scene.
+		 */
+		function addClown(params) { 
 			clown = createClown(params);
 			scene.add(clown);
 			clown.position.y = params.legLength * 2;
 		}
 
+		/** 
+		 * Adds a rug to the scene.
+		 */
+		function addRug(params) {
+			var rug = new THREE.Mesh(new THREE.PlaneGeometry(params.width, params.length, 32, 32), rugMaterial);
+			rug.rotation.set(-Math.PI/2, 0, 0);
+			scene.add(rug);
+		}
+
 		// ====================================================================
 
 		var scene = new THREE.Scene();  // creates the scene
+		scene.background = new THREE.Color( "lightblue" );
 
 		// creating origin with yellow dot and adding it to the scene
 		var originRadius = 0.5;
@@ -360,11 +374,11 @@
 		var originMesh = new THREE.Mesh(originGeom, originMaterial);
 		scene.add(originMesh);
 
-		// global dictionary of clown parameters
+		// global variables for the dimensions of the clown
 		var clownParams = {
 			headRadius: 3.5,
-			bodyRadiusX: 5,
-			bodyRadiusY: 1.5,
+			bodyRadius: 5,
+			bodyScaleY: 1.5,
 
 			hatHeight: 3,
 			hatTopRadius: 3, 
@@ -408,6 +422,13 @@
 		
 		addClown(clownParams);
 
+		var rugParams = {
+			length: 100,
+			width: 200,
+		}
+		
+		addRug(rugParams);
+
 		// ====================================================================
 		
 		/** 
@@ -419,11 +440,11 @@
     		state.render();
 		}
 
-		// sets up sliders to control the box dimensions
+		// sets up sliders with folders by body part to control the clown dimensions
 		var gui = new dat.GUI();
 		gui.add(clownParams, 'headRadius', 2, 5).onChange(redrawClown);
-		gui.add(clownParams, 'bodyRadiusX', 3, 7).onChange(redrawClown);
-		gui.add(clownParams, 'bodyRadiusY', 1, 3).onChange(redrawClown);
+		gui.add(clownParams, 'bodyRadius', 3, 7).onChange(redrawClown);
+		gui.add(clownParams, 'bodyScaleY', 1, 3).onChange(redrawClown);
 		
 		var hatFolder = gui.addFolder('hat');
 		hatFolder.add(clownParams, 'hatHeight', 2, 5).onChange(redrawClown);
