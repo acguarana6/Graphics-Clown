@@ -45,7 +45,7 @@
 		var headColor = "aquamarine";
 		var eyesColor = "indigo"
 		var legsColor = "magenta"
-		var footColor = "green"
+		var footColor = "springgreen"
 		
 		// defining materials for the clown
 		var bodyMaterial = new THREE.MeshBasicMaterial({ color: bodyColor });
@@ -207,6 +207,8 @@
 			var legFrame = createLimb(params.legRadiusTop, params.legRadiusBottom, params.legLength, legsMaterial, params);
 			legFrame.position.set(side * params.hipWidth, params.hipHeight, 0);
 			
+			addFoot(legFrame, params, side);
+			
 			body.add(legFrame);
 		}
 
@@ -237,16 +239,18 @@
 		}
 
 		/** 
-		 * 
+		 * Adds the foot mesh to the foot frame object, then adds the foot object to the leg. 
+		 * Input: leg object, dictionary of clown parameters.
 		 */
-		function addFoot(leg, params, side) {
+		function addFoot(leg, params) {
+			var footFrame = new THREE.Object3D();
 			var footMesh = createFoot(params);
-			var hipWidth = side * params.hipWidth;
-			var legLength = params.legLength*2 - 2.5;
+
+			footFrame.add(footMesh);
 			
-			footMesh.position.set(hipWidth, -legLength, 0);
+			footFrame.position.y = -params.legLength;
 			
-			leg.add(footMesh);
+			leg.add(footFrame);
 		}
 
 		/** 
@@ -264,8 +268,6 @@
 			addArm(bodyFrame, params, -1);
 			addLeg(bodyFrame, params, 1);
 			addLeg(bodyFrame, params, -1);
-			addFoot(bodyFrame, params, 1);
-			addFoot(bodyFrame, params, -1);
 
 			bodyMesh.scale.y = params.bodyScaleY;
 
@@ -337,7 +339,7 @@
 			legRadiusBottom: 0.7,
 			legRotation: 0.7,
 
-			footRadius: 1,
+			footRadius: 1.5,
 
 			hipHeight: -6,
 			hipWidth: 2.2
