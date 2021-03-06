@@ -1,17 +1,11 @@
 <!-- This program builds a clown figure using the Three.js library and 3D
 	objects. The flexibility of the clown is exhibited in the GUI, in which
 	users can toggle the sliders to change the dimensions of the clown.
+
 	CS 307
 	HW 2: Clown
 	Written by Peyton Wang and Alex Chin
 	Due: March 5, 2021
--->
-
-<!-- TODOs:
-- Fix clown position y
-- Update GUI with hand size and shoulder size
-- Make arms move with respect to body
-- Make legs move with respect to body
 -->
 
 <!DOCTYPE html>
@@ -401,7 +395,7 @@
 		function addClown(params) { 
 			clown = createClown(params);
 			scene.add(clown);
-			clown.position.y = params.legLength * 2;
+			clown.position.y = params.legLength * 1.5;
 		}
 
 		/** 
@@ -431,44 +425,44 @@
 
 		// global variables for the dimensions of the clown
 		var clownParams = {
-			headRadius: 3.5,
+			headRadius: 3.7,
 			bodyRadius: 5,
-			bodyScaleY: 1.25,
+			bodyScaleY: 1.3,
 
-			hatHeight: 3,
-			hatTopRadius: 3,
-			hatBottomRadius: 2,
-			hatBrimRadius: 4,
-			hatOffset: -0.4,
-			hatRotationX: -0.3,
-			hatRotationZ: -Math.PI/6,
+			hatHeight: 4.5,
+			hatTopRadius: 3.7,
+			hatBottomRadius: 2.5,
+			hatBrimRadius: 4.2,
+			hatOffset: -1,
+			hatRotationX: -0.2,
+			hatRotationZ: -0.2,
 
-			eyeRadius: 0.3,
-			eyeRotationX: -0.2,
+			eyeRadius: 0.35,
+			eyeRotationX: -0.15,
 			eyeRotationY: 0.35,
 
 			noseRadius: 0.3,
-			noseRotation: -0.01,
+			noseRotation: 0.05,
 
-			mouthRadius: 0.6,
-			mouthWidth: 0.2,
-			mouthArcLength: 2.7,
+			mouthRadius: 0.55,
+			mouthWidth: 0.15,
+			mouthArcLength: 2.5,
 			mouthRotation: 0.3,
 
 			earRadius: 1,
 			earScaleZ: 0.5,
-			earRotation: 0.1,
+			earRotation: 0,
 
-			shoulderOffset: -0.8,
+			shoulderOffset: -1,
 			shoulderRadius: 1.5,
-			armLength: 9,
+			armLength: 8,
 			armRadius: 0.7,
-			armRotation: Math.PI/5,
-			handRadius: 1.5,
+			armRotation: 0.6,
+			handRadius: 1.2,
 
-			hipWidth: 2.2,
+			hipWidth: 2,
 			legLength: 9,
-			legRadius: 0.7,
+			legRadius: 0.53,
 			footRadius: 2
 		}
 
